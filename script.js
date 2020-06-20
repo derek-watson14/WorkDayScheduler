@@ -32,15 +32,16 @@ function init() {
   time = moment().hour();
   trackime();
   setBgColors();
+  retrieveTasks();
+  displayTasks();
 }
 
 function retrieveTasks() {
   var localTasks = localStorage.getItem("tasks");
-  tasks = localTasks ? localTasks : {};
+  tasks = localTasks ? JSON.parse(localTasks) : {};
 }
 
 function displayTasks() {
-  retrieveTasks();
   for (var row of $(".hour-row")) {
     var rowId = row.dataset.time;
     var [, text, lock] = row.children;
@@ -58,19 +59,25 @@ function displayTasks() {
 
 $(document).ready(function () {
   init();
-  displayTasks();
 
   $(".hour-row--text").on("keyup", function () {
-    console.log(this.nextElementSibling);
-    this.nextElementSibling.classList.toggle("fa-lock");
-    this.nextElementSibling.classList.toggle("fa-unlock-alt");
+    var lock = this.nextElementSibling.children[0];
+    var taskId = this.parentElement.dataset.time;
+    if (tasks[taskId] !== this.value) {
+      lock.classList.remove("fa-lock");
+      lock.classList.add("fa-unlock-alt");
+    } else {
+      lock.classList.remove("fa-unlock-alt");
+      lock.classList.add("fa-lock");
+    }
   });
 
-  $(".hour-row").click(function () {
-    var [, text, lock] = this.children;
-    tasks[this.dataset.time] = {
-      text: text.value,
-    };
-    displayTasks();
+  $(".hour-row--lock").click(function () {
+    var text = $(this).siblings()[1].value;
+    var time = $(this).parent()[0].dataset.time;
+    this.children[0].classList.remove("fa-unlock-alt");
+    this.children[0].classList.add("fa-lock");
+    tasks[time] = text;
+    localStorage.setItem("tasks", JSON.stringify(tasks));
   });
 });
