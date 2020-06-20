@@ -12,4 +12,4 @@ https://derek-watson14.github.io/WorkDayScheduler/
 
 ### Screenshot:
 
-![screenshot of site before button click](screenshots/sample.png)
+![Sample day planner](screenshot/sample.png)
